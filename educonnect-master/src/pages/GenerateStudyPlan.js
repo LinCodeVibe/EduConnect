@@ -1,9 +1,8 @@
 import React from "react";
-import Layout from "../components/Layout";
+//import Layout from "../components/Layout";
 
 export const GenerateStudyPlan = (props) => {
   return (
-<<<<<<< HEAD
     <div id="study-plan" className="text-center">
       <div className="container">
         <div className="col-md-10 col-md-offset-1 section-title">
@@ -80,11 +79,7 @@ export const GenerateStudyPlan = (props) => {
 
       </div>
     </div>
-=======
-    <Layout>
-      <h1>This is the generate study plan page!</h1>
-    </Layout>
->>>>>>> 3720f0736e36d23dc44fe70a79f482fac390056b
+
   );
   
 };
