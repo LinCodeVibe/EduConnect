@@ -1,32 +1,3 @@
-// import React from "react";
-// import BasicTabs from "./tab";
-// import UserAvatar from "./avatar";
-
-// const Layout = ({ children }) => {
-//   const layoutStyles = {
-//     position: "relative", // Allow absolute positioning within this container
-//     minHeight: "100vh", // Ensure the layout takes up the full height of the viewport
-//   };
-
-//   const avatarContainerStyles = {
-//     position: "absolute", // Position relative to the layout container
-//     top: "5px", // Position 10px from the top
-//     right: "20px", // Position 10px from the right
-//   };
-
-//   return (
-//     <div style={layoutStyles}>
-//       <div style={avatarContainerStyles}>
-//         <UserAvatar />
-//       </div>
-//       <BasicTabs /> {/* Tab navigation */}
-//       <div>{children}</div> {/* Render the content of the page */}
-//     </div>
-//   );
-// };
-
-// export default Layout;
-
 import React from "react";
 import { useHistory } from "react-router-dom"; // For navigation
 import { signOut } from "firebase/auth"; // For signing out
@@ -41,7 +12,7 @@ const Layout = ({ children }) => {
     try {
       await signOut(auth); // Sign out the user
       alert("Successfully signed out!");
-      history.push("/"); 
+      history.push("/");
     } catch (error) {
       console.error("Sign Out Error: ", error);
       alert("Error signing out. Please try again.");
@@ -63,24 +34,10 @@ const Layout = ({ children }) => {
     zIndex: 1, // Ensure it is above other elements
   };
 
-  const signOutButtonStyles = {
-    padding: "5px 10px",
-    backgroundColor: "#4CAF50", // Green button color
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "bold",
-  };
-
   return (
     <div style={layoutStyles}>
       <div style={avatarContainerStyles}>
-        <UserAvatar /> 
-        <button style={signOutButtonStyles} onClick={handleSignOut}>
-          Sign Out
-        </button>
+        <UserAvatar />
       </div>
       <BasicTabs /> {/* Tab navigation */}
       <div>{children}</div> {/* Render the content of the page */}
@@ -89,6 +46,3 @@ const Layout = ({ children }) => {
 };
 
 export default Layout;
-
-
-

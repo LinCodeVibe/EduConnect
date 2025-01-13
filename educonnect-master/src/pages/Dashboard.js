@@ -100,6 +100,7 @@ export const Dashboard = () => {
               <Card
                 sx={{
                   minWidth: 275,
+                  height: "100%",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -128,5 +129,3 @@ export const Dashboard = () => {
     </Layout>
   );
 };
-
-

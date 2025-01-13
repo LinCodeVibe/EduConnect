@@ -40,10 +40,8 @@ export default function BasicTabs() {
 
   React.useEffect(() => {
     // Set the active tab based on the current route
-    if (location.pathname === "/profile") {
-      setValue(1); // User Profile page
-    } else {
-      setValue(0); // Dashboard page
+    if (location.pathname === "/dashboard") {
+      setValue(0); // User Profile page
     }
   }, [location]);
 
@@ -64,13 +62,6 @@ export default function BasicTabs() {
             component={Link}
             to="/dashboard"
             {...a11yProps(0)}
-            sx={{ fontSize: "1.5rem" }}
-          />
-          <Tab
-            label="User Profile"
-            component={Link}
-            to="/profile"
-            {...a11yProps(1)}
             sx={{ fontSize: "1.5rem" }}
           />
         </Tabs>
