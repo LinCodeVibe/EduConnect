@@ -170,12 +170,17 @@ hr {
   background-image: linear-gradient(to right, #5ca9fb 0%, #6372ff 100%);
   padding: 14px 34px;
   letter-spacing: 1px;
-  margin: 0;
+  /* margin: 0; */
+  margin: 0 30px 0 0; /* Add margin to the right */
   font-size: 15px;
   font-weight: 500;
   border-radius: 25px;
   transition: all 0.5s linear;
   border: 0;
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  -ms-border-radius: 25px;
+  -o-border-radius: 25px;
 }
 .btn-custom:hover,
 .btn-custom:focus,
