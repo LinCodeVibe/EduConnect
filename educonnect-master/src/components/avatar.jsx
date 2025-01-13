@@ -1,21 +1,17 @@
-import * as React from "react";
+import React from "react";
 import Avatar from "@mui/material/Avatar";
-import { useHistory } from "react-router-dom"; // For React Router v5
+import { Link } from "react-router-dom"; // Use Link for navigation
 
 export default function UserAvatar() {
-  const history = useHistory(); // For navigation
-
-  const handleProfileClick = () => {
-    history.push("/profile"); // Navigate to the /profile page
-  };
-
   return (
-    <div
-      style={{ cursor: "pointer" }}
-      onClick={handleProfileClick}
-      title="Go to Profile"
-    >
-      <Avatar alt="User Profile" src="img/user.png" />
+    <div title="Go to Profile">
+      <Link to="/profile">
+        <Avatar
+          alt="User Profile"
+          src="img/user.png"
+          style={{ cursor: "pointer" }}
+        />
+      </Link>
     </div>
   );
 }

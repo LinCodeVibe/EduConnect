@@ -66,6 +66,13 @@ export default function BasicTabs() {
             {...a11yProps(0)}
             sx={{ fontSize: "1.5rem" }}
           />
+          <Tab
+            label="User Profile"
+            component={Link}
+            to="/profile"
+            {...a11yProps(1)}
+            sx={{ fontSize: "1.5rem" }}
+          />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}></CustomTabPanel>
