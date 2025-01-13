@@ -9,41 +9,64 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid"; // Import Grid for layout
 import AddCircleIcon from "@mui/icons-material/AddCircle"; // Import AddCircle icon for the plus sign
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../config/firebase";
 
 export const Dashboard = () => {
   const history = useHistory(); // Instantiate the history object
   const [studyPlans, setStudyPlans] = useState([]); // State to hold study plan data
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Auth state
+
+  // Monitor authentication state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true); // User is signed in
+      } else {
+        setIsAuthenticated(false); // User is not signed in
+        history.push("/signin"); // Redirect to login page
+      }
+    });
+    return () => unsubscribe(); // Cleanup listener on component unmount
+  }, [history]);
 
   // Simulate fetching data from Firebase
   useEffect(() => {
+    if (isAuthenticated) {
     // This is where you'd normally fetch the data from Firebase
-    const fetchedData = [
-      {
-        id: 1,
-        subject: "Mathematics",
-        date: "1/12/2025",
-        description: "Derivatives, Integrals, Limits",
-      },
-      {
-        id: 2,
-        subject: "Physics",
-        date: "1/15/2025",
-        description: "Kinematics, Thermodynamics",
-      },
-      {
-        id: 3,
-        subject: "Chemistry",
-        date: "1/18/2025",
-        description: "Organic Chemistry, Acids & Bases",
-      },
-    ];
-    setStudyPlans(fetchedData); // Set the fetched data to state
-  }, []);
+      const fetchedData = [
+        {
+          id: 1,
+          subject: "Mathematics",
+          date: "1/12/2025",
+          description: "Derivatives, Integrals, Limits",
+        },
+        {
+          id: 2,
+          subject: "Physics",
+          date: "1/15/2025",
+          description: "Kinematics, Thermodynamics",
+        },
+        {
+          id: 3,
+          subject: "Chemistry",
+          date: "1/18/2025",
+          description: "Organic Chemistry, Acids & Bases",
+        },
+      ];
+      setStudyPlans(fetchedData); // Set the fetched data to state
+    }
+  }, [isAuthenticated]);
 
   // Handle navigation to different pages
   const goToGenerateStudyPlan = () => {
     history.push("/generate"); // Navigate to the generate study plan page
   };
+
+  // Render nothing if user is not authenticated
+  if (!isAuthenticated) {
+    return null; // Optionally, show a loader while checking auth state
+  }
 
   return (
     <Layout>
