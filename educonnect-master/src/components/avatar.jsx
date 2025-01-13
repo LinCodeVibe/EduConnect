@@ -1,22 +1,4 @@
-// import React from "react";
-// import Avatar from "@mui/material/Avatar";
-// import { Link } from "react-router-dom"; // Use Link for navigation
-
-// export default function UserAvatar() {
-//   return (
-//     <div title="Go to Profile">
-//       <Link to="/profile">
-//         <Avatar
-//           alt="User Profile"
-//           src="img/user.png"
-//           style={{ cursor: "pointer" }}
-//         />
-//       </Link>
-//     </div>
-//   );
-// }
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -32,8 +14,22 @@ import { auth } from "../config/firebase"; // Firebase config
 
 export default function UserAvatar() {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [userEmail, setUserEmail] = useState(""); // State to store the user email
   const open = Boolean(anchorEl);
   const history = useHistory();
+
+  useEffect(() => {
+    // Fetch the email of the signed-in user
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserEmail(user.email || ""); // Set the email or an empty string if not available
+      } else {
+        setUserEmail(""); // Clear the email if no user is signed in
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup subscription on unmount
+  }, []);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -61,7 +57,7 @@ export default function UserAvatar() {
 
   return (
     <>
-      <Tooltip title="Account settings">
+      <Tooltip title="Account Settings">
         <IconButton
           onClick={handleMenuOpen}
           size="small"
@@ -71,7 +67,7 @@ export default function UserAvatar() {
           aria-expanded={open ? "true" : undefined}
         >
           <Avatar
-            alt="User Profile"
+            alt={userEmail || "User Profile"}
             src="img/user.png"
             sx={{ cursor: "pointer", width: 32, height: 32 }}
           />

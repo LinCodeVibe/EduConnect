@@ -1,7 +1,48 @@
 import React from "react";
 import Layout from "../components/Layout";
+import { getAuth } from "firebase/auth";
+import { getFirestore, doc, collection, addDoc } from "firebase/firestore";
 
-export const GenerateStudyPlan = (props) => {
+export const GenerateStudyPlan = () => {
+  const auth = getAuth();
+  const db = getFirestore();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const subject = e.target.subject.value;
+    const duration = e.target.duration.value;
+    const focusTopics = e.target.focusTopics.value;
+
+    if (auth.currentUser) {
+      const userUid = auth.currentUser.uid;
+
+      try {
+        // Reference to the user's "studyPlans" collection in Firestore
+        const studyPlansRef = collection(
+          doc(db, "users", userUid),
+          "studyPlans"
+        );
+
+        // Add the study plan to Firestore
+        await addDoc(studyPlansRef, {
+          subject,
+          duration,
+          focusTopics,
+          createdAt: new Date(),
+        });
+
+        alert("Study plan saved successfully!");
+        e.target.reset(); // Clear the form
+      } catch (error) {
+        console.error("Error saving study plan: ", error);
+        alert("Failed to save study plan. Please try again.");
+      }
+    } else {
+      alert("You need to be signed in to save a study plan.");
+    }
+  };
+
   return (
     <Layout>
       <div id="study-plan" className="text-center">
@@ -10,22 +51,7 @@ export const GenerateStudyPlan = (props) => {
             <h2>Generate Your Study Plan</h2>
           </div>
           <div className="row">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const subject = e.target.subject.value;
-                const duration = e.target.duration.value;
-                const focusTopics = e.target.focusTopics.value;
-
-                // Call OpenAI/ChatGPT API or handle the study plan generation logic here
-                console.log({
-                  subject,
-                  duration,
-                  focusTopics,
-                });
-              }}
-              className="col-md-8 col-md-offset-2"
-            >
+            <form onSubmit={handleSubmit} className="col-md-8 col-md-offset-2">
               <div className="form-group">
                 <label htmlFor="subject">
                   1. Which subject do you want to master?
@@ -53,11 +79,7 @@ export const GenerateStudyPlan = (props) => {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="focusTopics">
-                  3. To help us better tailor the study plan to your goals, give
-                  us a few concepts/topics that you want to focus on within the
-                  subject (optional).
-                </label>
+                <label htmlFor="focusTopics">3. Focus Topics (optional)</label>
                 <textarea
                   id="focusTopics"
                   name="focusTopics"
@@ -70,25 +92,25 @@ export const GenerateStudyPlan = (props) => {
                 Generate Study Plan
               </button>
             </form>
-          </div>
-          {/* Output Section */}
-          <div className="row" style={{ marginTop: "30px" }}>
-            {GenerateStudyPlan && (
-              <div className="col-md-8 col-md-offset-2">
-                <div
-                  className="output-box"
-                  style={{
-                    padding: "20px",
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    backgroundColor: "#f9f9f9",
-                  }}
-                >
-                  <h3>Result of generated Study Plan</h3>
-                  <p>{GenerateStudyPlan}</p>
+            {/* Output Section */}
+            <div className="row" style={{ marginTop: "30px" }}>
+              {GenerateStudyPlan && (
+                <div className="col-md-8 col-md-offset-2">
+                  <div
+                    className="output-box"
+                    style={{
+                      padding: "20px",
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      backgroundColor: "#f9f9f9",
+                    }}
+                  >
+                    <h3>Result of generated Study Plan</h3>
+                    <p>{GenerateStudyPlan}</p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
