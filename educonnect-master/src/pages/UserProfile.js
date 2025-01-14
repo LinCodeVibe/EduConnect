@@ -108,14 +108,18 @@ export const UserProfile = () => {
 
   return (
     <Layout>
+      <p
+        onClick={() => history.push("/dashboard")}
+        style={{
+          cursor: "pointer",
+          marginTop: "-20px",
+          marginLeft: "40px",
+          marginBottom: "30px",
+        }}
+      >
+        ← Back to Dashboard
+      </p>
       <Box sx={{ maxWidth: 700, mx: "auto" }}>
-        <p
-          onClick={() => history.push("/dashboard")} // Navigate to the landing page
-          style={{ cursor: "pointer" }}
-        >
-          ← Back to Dashboard
-        </p>
-
         <Typography variant="h5" sx={{ fontSize: "2.5rem", mb: 2 }}>
           Learning Preferences
         </Typography>

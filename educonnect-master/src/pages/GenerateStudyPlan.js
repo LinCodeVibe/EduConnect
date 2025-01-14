@@ -2,10 +2,12 @@ import React from "react";
 import Layout from "../components/Layout";
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, collection, addDoc } from "firebase/firestore";
+import { useHistory } from "react-router-dom";
 
 export const GenerateStudyPlan = () => {
   const auth = getAuth();
   const db = getFirestore();
+  const history = useHistory();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +47,17 @@ export const GenerateStudyPlan = () => {
 
   return (
     <Layout>
+      <p
+        onClick={() => history.push("/dashboard")}
+        style={{
+          cursor: "pointer",
+          marginTop: "-20px",
+          marginLeft: "40px",
+          marginBottom: "30px",
+        }}
+      >
+        ← Back to Dashboard
+      </p>
       <div id="study-plan" className="text-center">
         <div className="container">
           <div className="col-md-10 col-md-offset-1 section-title">
