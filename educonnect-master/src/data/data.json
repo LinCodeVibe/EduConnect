@@ -1,10 +1,10 @@
 {
   "Header": {
-    "title": "We are a Landing Page",
-    "paragraph": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam sed commodo nibh ante facilisis bibendum."
+    "title": "Empowering Learners",
+    "paragraph": "One Goal at a Time. Whether you're mastering a new subject or refining existing skills, EduConnect provides the tools and support to keep you motivated."
   },
   "About": {
-    "paragraph": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    "paragraph": "Welcome to EduConnect — your ultimate learning companion. At EduConnect, we believe every learner has unique potential, and our mission is to help you achieve your goals one step at a time. Designed for students and lifelong learners, EduConnect empowers you to craft tailored study plans, track your progress, and access the resources you need to succeed. Join us on a journey of growth and accomplishment.",
     "Why": [
       "Lorem ipsum dolor",
       "Tempor incididunt",
@@ -162,23 +162,23 @@
   "Features": [
     {
       "icon": "fa fa-comments-o",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "title": "Customizable Study Plans",
+      "text": "Allow users to create personalized study schedules tailored to their goals, time frame, and focus areas."
     },
     {
       "icon": "fa fa-bullhorn",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "title": "Learning Preferences",
+      "text": "Users can select their preferred learning style (e.g., visual, auditory, kinesthetic) and preferred methods of learning."
     },
     {
       "icon": "fa fa-group",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "title": "Goal Tracking",
+      "text": "Track progress toward academic and personal goals with a user-friendly dashboard."
     },
     {
       "icon": "fa fa-magic",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "title": "Interactive Dashboard",
+      "text": "Display current and completed study plans with options to view, mark as complete, or delete plans."
     }
   ]
 }
