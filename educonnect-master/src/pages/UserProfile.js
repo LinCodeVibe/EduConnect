@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import { Box, Typography, MenuItem, TextField, Button, Card, CardContent } from "@mui/material";
+import {
+  Box,
+  Typography,
+  MenuItem,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+} from "@mui/material";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useHistory } from "react-router-dom";
 
 export const UserProfile = () => {
   const [learningPreferences, setLearningPreferences] = useState({
@@ -16,6 +25,8 @@ export const UserProfile = () => {
   const [userId, setUserId] = useState(null);
   const [isPreferencesSaved, setIsPreferencesSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // State to track loading state
+
+  const history = useHistory();
 
   useEffect(() => {
     const auth = getAuth();
@@ -97,8 +108,15 @@ export const UserProfile = () => {
 
   return (
     <Layout>
-      <Box sx={{  maxWidth: 700, mx: "auto" }}>
-        <Typography variant="h5" sx={{ fontSize: "2.5rem", mb: 2  }}>
+      <Box sx={{ maxWidth: 700, mx: "auto" }}>
+        <p
+          onClick={() => history.push("/dashboard")} // Navigate to the landing page
+          style={{ cursor: "pointer" }}
+        >
+          ← Back to Dashboard
+        </p>
+
+        <Typography variant="h5" sx={{ fontSize: "2.5rem", mb: 2 }}>
           Learning Preferences
         </Typography>
 
@@ -166,50 +184,6 @@ export const UserProfile = () => {
             {isPreferencesSaved ? "Save Changes" : "Save Preferences"}
           </Button>
         </Box>
-
-        {savedPreferences && (
-          <Card
-            sx={{
-              mt: 4,
-              p: 2,
-              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.4)",
-              borderRadius: "12px",
-              backgroundColor: "#f9f9f9",
-            }}
-          >
-            <CardContent>
-              <Typography
-                variant="h5"
-                sx={{
-                  mb: 2,
-                  fontWeight: "bold",
-                  color: "#1976d2",
-                  borderBottom: "2px solid #1976d2",
-                  pb: 1,
-                }}
-              >
-                Your Learning Preferences
-              </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 1.5,
-                }}
-              >
-                <Typography sx={{ fontSize: "1.3rem" }}>
-                  <strong>Style:</strong> {savedPreferences.styles || "N/A"}
-                </Typography>
-                <Typography sx={{ fontSize: "1.3rem" }}>
-                  <strong>Methods:</strong> {savedPreferences.methods || "N/A"}
-                </Typography>
-                <Typography sx={{ fontSize: "1.3rem" }}>
-                  <strong>Notes:</strong> {savedPreferences.additionalNotes || "N/A"}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        )}
       </Box>
     </Layout>
   );
