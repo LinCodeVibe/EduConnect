@@ -11,61 +11,72 @@ import Grid from "@mui/material/Grid"; // Import Grid for layout
 import AddCircleIcon from "@mui/icons-material/AddCircle"; // Import AddCircle icon for the plus sign
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../config/firebase";
+import {
+  getFirestore,
+  doc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 export const Dashboard = () => {
   const history = useHistory(); // Instantiate the history object
   const [studyPlans, setStudyPlans] = useState([]); // State to hold study plan data
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Auth state
+  const db = getFirestore(); // Firestore instance
 
-  // Monitor authentication state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setIsAuthenticated(true); // User is signed in
+        setIsAuthenticated(true);
       } else {
-        setIsAuthenticated(false); // User is not signed in
-        history.push("/signin"); // Redirect to login page
+        setIsAuthenticated(false);
+        history.push("/signin");
       }
     });
-    return () => unsubscribe(); // Cleanup listener on component unmount
+
+    return () => unsubscribe();
   }, [history]);
 
-  // Simulate fetching data from Firebase
+  // Fetch data from Firestore
   useEffect(() => {
-    if (isAuthenticated) {
-    // This is where you'd normally fetch the data from Firebase
-      const fetchedData = [
-        {
-          id: 1,
-          subject: "Mathematics",
-          date: "1/12/2025",
-          description: "Derivatives, Integrals, Limits",
-        },
-        {
-          id: 2,
-          subject: "Physics",
-          date: "1/15/2025",
-          description: "Kinematics, Thermodynamics",
-        },
-        {
-          id: 3,
-          subject: "Chemistry",
-          date: "1/18/2025",
-          description: "Organic Chemistry, Acids & Bases",
-        },
-      ];
-      setStudyPlans(fetchedData); // Set the fetched data to state
-    }
-  }, [isAuthenticated]);
+    const fetchStudyPlans = async () => {
+      if (auth.currentUser) {
+        const userUid = auth.currentUser.uid;
 
-  // Handle navigation to different pages
+        try {
+          const studyPlansRef = collection(
+            doc(db, "users", userUid),
+            "studyPlans"
+          );
+
+          const q = query(studyPlansRef); // Query to get all study plans
+          const querySnapshot = await getDocs(q);
+
+          const fetchedData = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          setStudyPlans(fetchedData);
+        } catch (error) {
+          console.error("Error fetching study plans: ", error);
+        }
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchStudyPlans();
+    }
+  }, [isAuthenticated, db]);
+
   const goToGenerateStudyPlan = () => {
-    history.push("/generate"); // Navigate to the generate study plan page
+    history.push("/generate");
   };
 
-  // Render nothing if user is not authenticated
   if (!isAuthenticated) {
-    return null; // Optionally, show a loader while checking auth state
+    return null;
   }
 
   return (
@@ -85,8 +96,6 @@ export const Dashboard = () => {
           <Grid container spacing={3}>
             {studyPlans.map((plan) => (
               <Grid item xs={12} sm={6} md={4} key={plan.id}>
-                {" "}
-                {/* Responsive layout: 3 columns */}
                 <Card sx={{ minWidth: 275 }}>
                   <CardContent>
                     <Typography
@@ -103,10 +112,15 @@ export const Dashboard = () => {
                         fontSize: "1rem",
                       }}
                     >
-                      Created on: {plan.date}
+                      Created on:{" "}
+                      {plan.createdAt
+                        ? new Date(
+                            plan.createdAt.seconds * 1000
+                          ).toLocaleDateString()
+                        : "Unknown"}
                     </Typography>
                     <Typography variant="body2" sx={{ fontSize: "1rem" }}>
-                      {plan.description}
+                      {plan.focusTopics || "No topics specified."}
                     </Typography>
                   </CardContent>
                   <CardActions>
@@ -118,30 +132,20 @@ export const Dashboard = () => {
               </Grid>
             ))}
 
-            {/* New card with plus sign to navigate to the generate new study plan page */}
+            {/* New card with plus sign */}
             <Grid item xs={12} sm={6} md={4}>
               <Card
                 sx={{
                   minWidth: 275,
-                  height: "100%",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                   height: "100%",
                   cursor: "pointer",
                 }}
-                onClick={goToGenerateStudyPlan} // Navigate to generate study plan
+                onClick={goToGenerateStudyPlan}
               >
-                <CardContent
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100%",
-                    cursor: "pointer",
-                  }}
-                  onClick={goToGenerateStudyPlan} // Navigate to generate study plan
-                >
+                <CardContent>
                   <AddCircleIcon sx={{ fontSize: "4rem", color: "#4caf50" }} />
                 </CardContent>
               </Card>
