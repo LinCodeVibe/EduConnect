@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import { Box, Typography, MenuItem, TextField, Button } from "@mui/material";
+import { Box, Typography, MenuItem, TextField, Button, Card, CardContent } from "@mui/material";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export const UserProfile = () => {
-  // State for learning preferences
   const [learningPreferences, setLearningPreferences] = useState({
     styles: "",
     methods: "",
     additionalNotes: "",
   });
 
-  const [userId, setUserId] = useState(null); // State to hold the user ID
-  const [isPreferencesSaved, setIsPreferencesSaved] = useState(false); // State to track if preferences are saved
+  const [savedPreferences, setSavedPreferences] = useState(null); // State to hold saved preferences
+  const [userId, setUserId] = useState(null);
+  const [isPreferencesSaved, setIsPreferencesSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // State to track loading state
 
-  // Get the current user's ID (UID) from Firebase Authentication
   useEffect(() => {
     const auth = getAuth();
-    const user = auth.currentUser;
-    if (user) {
-      setUserId(user.uid); // Store the user UID if they are logged in
 
-      // Fetch existing preferences if available
-      const fetchPreferences = async () => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUserId(user.uid);
+
+        // Fetch preferences after authentication is confirmed
         try {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
@@ -33,19 +33,20 @@ export const UserProfile = () => {
             const data = docSnap.data();
             if (data.learningPreferences) {
               setLearningPreferences(data.learningPreferences);
-              setIsPreferencesSaved(true); // Mark preferences as already saved
+              setSavedPreferences(data.learningPreferences);
+              setIsPreferencesSaved(true);
             }
           }
         } catch (error) {
           console.error("Error fetching preferences:", error);
         }
-      };
+      }
+      setIsLoading(false); // Authentication and data fetching completed
+    });
 
-      fetchPreferences();
-    }
+    return () => unsubscribe(); // Cleanup on unmount
   }, []);
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLearningPreferences((prev) => ({
@@ -54,13 +55,11 @@ export const UserProfile = () => {
     }));
   };
 
-  // Function to save preferences to Firebase
   const savePreferencesToFirebase = async (preferences, userId) => {
-    if (!userId) return; // Check if userId exists (if the user is logged in)
+    if (!userId) return;
 
     try {
       if (isPreferencesSaved) {
-        // If preferences are already saved, update the document with new preferences
         await setDoc(
           doc(db, "users", userId),
           { learningPreferences: preferences },
@@ -68,92 +67,149 @@ export const UserProfile = () => {
         );
         alert("Changes saved successfully!");
       } else {
-        // If this is the first time saving preferences, create the new document
         await setDoc(doc(db, "users", userId), {
           learningPreferences: preferences,
         });
         alert("Preferences saved successfully!");
-        setIsPreferencesSaved(true); // Mark preferences as saved
+        setIsPreferencesSaved(true);
       }
+      setSavedPreferences(preferences); // Update saved preferences after saving
     } catch (error) {
       console.error("Error saving preferences:", error);
       alert("Failed to save preferences. Please try again.");
     }
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Save preferences to Firebase
     savePreferencesToFirebase(learningPreferences, userId);
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <Box sx={{ p: 3, textAlign: "center" }}>
+          <Typography variant="h5">Loading...</Typography>
+        </Box>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{ p: 3, maxWidth: 600, mx: "auto" }}
-      >
-        <Typography variant="h5" sx={{ fontSize: "2.5rem", mb: 2 }}>
+      <Box sx={{  maxWidth: 700, mx: "auto" }}>
+        <Typography variant="h5" sx={{ fontSize: "2.5rem", mb: 2  }}>
           Learning Preferences
         </Typography>
 
-        {/* Learning Style */}
-        <TextField
-          fullWidth
-          select
-          label="Learning Style"
-          name="styles"
-          value={learningPreferences.styles}
-          onChange={handleChange}
-          margin="normal"
-          InputLabelProps={{ style: { fontSize: "1.1rem" } }}
-          inputProps={{ style: { fontSize: "1.1rem" } }}
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            mb: 4,
+            p: 3,
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            fontSize: "1.2rem", // Apply font size to the form container
+          }}
         >
-          <MenuItem value="Visual">Visual</MenuItem>
-          <MenuItem value="Auditory">Auditory</MenuItem>
-          <MenuItem value="Kinesthetic">Kinesthetic</MenuItem>
-          <MenuItem value="Reading/Writing">Reading/Writing</MenuItem>
-        </TextField>
+          <TextField
+            fullWidth
+            select
+            label="Learning Style"
+            name="styles"
+            value={learningPreferences.styles}
+            onChange={handleChange}
+            margin="normal"
+            InputLabelProps={{ style: { fontSize: "1.2rem" } }}
+            inputProps={{ style: { fontSize: "1.2rem" } }}
+          >
+            <MenuItem value="Visual">Visual</MenuItem>
+            <MenuItem value="Auditory">Auditory</MenuItem>
+            <MenuItem value="Kinesthetic">Kinesthetic</MenuItem>
+            <MenuItem value="Reading/Writing">Reading/Writing</MenuItem>
+          </TextField>
 
-        {/* Preferred Methods of Learning */}
-        <TextField
-          fullWidth
-          multiline
-          rows={4}
-          label="Preferred Methods of Learning (Ex.Group discussions, video tutorials, etc.)"
-          name="methods"
-          value={learningPreferences.methods}
-          onChange={handleChange}
-          margin="normal"
-          InputLabelProps={{ style: { fontSize: "1.1rem" } }}
-          inputProps={{ style: { fontSize: "1.1rem" } }}
-        />
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            label="Preferred Methods of Learning"
+            placeholder="e.g., Group discussions, video tutorials"
+            name="methods"
+            value={learningPreferences.methods}
+            onChange={handleChange}
+            margin="normal"
+            InputLabelProps={{ style: { fontSize: "1.2rem" } }}
+            inputProps={{ style: { fontSize: "1.2rem" } }}
+          />
 
-        {/* Additional Notes */}
-        <TextField
-          fullWidth
-          multiline
-          rows={2}
-          label="Additional Notes"
-          name="additionalNotes"
-          value={learningPreferences.additionalNotes}
-          onChange={handleChange}
-          margin="normal"
-          InputLabelProps={{ style: { fontSize: "1.1rem" } }}
-          inputProps={{ style: { fontSize: "1.1rem" } }}
-        />
+          <TextField
+            fullWidth
+            multiline
+            rows={2}
+            label="Additional Notes"
+            name="additionalNotes"
+            value={learningPreferences.additionalNotes}
+            onChange={handleChange}
+            margin="normal"
+            InputLabelProps={{ style: { fontSize: "1.2rem" } }}
+            inputProps={{ style: { fontSize: "1.2rem" } }}
+          />
 
-        {/* Save Button */}
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          sx={{ mt: 2, fontSize: "1rem", padding: "0.5rem 1.5rem" }}
-        >
-          {isPreferencesSaved ? "Save Changes" : "Save Preferences"}
-        </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            sx={{ mt: 2, fontSize: "1.2rem", padding: "0.5rem 1.5rem" }}
+          >
+            {isPreferencesSaved ? "Save Changes" : "Save Preferences"}
+          </Button>
+        </Box>
+
+        {savedPreferences && (
+          <Card
+            sx={{
+              mt: 4,
+              p: 2,
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.4)",
+              borderRadius: "12px",
+              backgroundColor: "#f9f9f9",
+            }}
+          >
+            <CardContent>
+              <Typography
+                variant="h5"
+                sx={{
+                  mb: 2,
+                  fontWeight: "bold",
+                  color: "#1976d2",
+                  borderBottom: "2px solid #1976d2",
+                  pb: 1,
+                }}
+              >
+                Your Learning Preferences
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1.5,
+                }}
+              >
+                <Typography sx={{ fontSize: "1.3rem" }}>
+                  <strong>Style:</strong> {savedPreferences.styles || "N/A"}
+                </Typography>
+                <Typography sx={{ fontSize: "1.3rem" }}>
+                  <strong>Methods:</strong> {savedPreferences.methods || "N/A"}
+                </Typography>
+                <Typography sx={{ fontSize: "1.3rem" }}>
+                  <strong>Notes:</strong> {savedPreferences.additionalNotes || "N/A"}
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        )}
       </Box>
     </Layout>
   );

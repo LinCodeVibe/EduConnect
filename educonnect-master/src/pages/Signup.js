@@ -84,6 +84,12 @@ export default function SignupPage() {
             Login
           </span>
         </p>
+        <p
+        style={styles.backToHome}
+        onClick={() => history.push("/")} // Navigate to the landing page
+        >
+        ← Back to Home
+        </p>
       </div>
     </div>
   );
@@ -95,8 +101,13 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh",
-    backgroundColor: "#1111",
     paddingTop: "20px",
+    backgroundImage: "url('/img/Edu_BG1.png')", // Add your image URL here
+    backgroundSize: "cover", // Ensures the image covers the entire background
+    backgroundPosition: "center", // Centers the image
+    backgroundRepeat: "no-repeat", // Prevents the image from repeating
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    backgroundBlendMode: "overlay",
   },
   formContainer: {
     backgroundColor: "#FFF",
@@ -129,6 +140,8 @@ const styles = {
     color: "white",
     fontWeight: "bold",
     cursor: "pointer",
+    marginTop: "15px",
+
   },
   loginText: {
     marginTop: "10px",
@@ -139,5 +152,13 @@ const styles = {
     color: "#007BFF",
     cursor: "pointer",
     textDecoration: "underline",
+  },
+  backToHome: {
+    marginTop: "20px",
+    fontSize: "14px",
+    color: "#555",
+    cursor: "pointer",
+    textDecoration: "underline",
+    fontWeight: "bold",
   },
 };
