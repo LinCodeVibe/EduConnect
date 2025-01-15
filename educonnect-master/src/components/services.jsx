@@ -7,8 +7,7 @@ export const Services = (props) => {
         <div className="section-title">
           <h2>Our Services</h2>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit duis sed
-            dapibus leonec.
+          We provide personalized learning plans, progress tracking, and community support while leveraging insights into your learning style and offering curated resources to help you achieve your goals efficiently.
           </p>
         </div>
         <div className="row">
