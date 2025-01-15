@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase";
 import { useHistory } from "react-router-dom";
+import HomeIcon from '@mui/icons-material/Home';
+
 
 export default function SigninPage() {
   const [email, setEmail] = useState("");
@@ -76,11 +78,17 @@ export default function SigninPage() {
             Sign Up
           </span>
         </p>
-        <p
+        {/* <p
         style={styles.backToHome}
         onClick={() => history.push("/")} // Navigate to the landing page
         >
         ← Back to Home
+        </p> */}
+        <p
+          style={styles.backToHome}
+          onClick={() => history.push("/")} // Navigate to the landing page
+        >
+          <HomeIcon style={{ fontSize: '24px' }} />
         </p>
       </div>
     </div>
