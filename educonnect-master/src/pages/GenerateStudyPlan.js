@@ -1,47 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, collection, addDoc } from "firebase/firestore";
 import { useHistory } from "react-router-dom";
+import { generateStudyPlan } from "../services/openai";
+import { Loader2 } from "lucide-react";
 
 export const GenerateStudyPlan = () => {
   const auth = getAuth();
   const db = getFirestore();
   const history = useHistory();
+  const [loading, setLoading] = useState(false);
+  const [generatedPlan, setGeneratedPlan] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const subject = e.target.subject.value;
     const duration = e.target.duration.value;
     const focusTopics = e.target.focusTopics.value;
 
-    if (auth.currentUser) {
-      const userUid = auth.currentUser.uid;
+    try {
+      // Generate study plan using OpenAI
+      const plan = await generateStudyPlan(subject, duration, focusTopics);
+      setGeneratedPlan(plan);
 
-      try {
-        // Reference to the user's "studyPlans" collection in Firestore
+      if (auth.currentUser) {
+        const userUid = auth.currentUser.uid;
         const studyPlansRef = collection(
           doc(db, "users", userUid),
           "studyPlans"
         );
 
-        // Add the study plan to Firestore
+        // Save both user preferences and generated plan
         await addDoc(studyPlansRef, {
           subject,
           duration,
           focusTopics,
+          generatedPlan: plan,
           createdAt: new Date(),
         });
 
-        alert("Study plan saved successfully!");
-        e.target.reset(); // Clear the form
-      } catch (error) {
-        console.error("Error saving study plan: ", error);
-        alert("Failed to save study plan. Please try again.");
+        alert("Study plan generated and saved successfully!");
       }
-    } else {
-      alert("You need to be signed in to save a study plan.");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to generate or save study plan. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,29 +108,39 @@ export const GenerateStudyPlan = () => {
                   rows="4"
                 ></textarea>
               </div>
-              <button type="submit" className="btn btn-primary btn-lg">
-                Generate Study Plan
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <Loader2 className="animate-spin mr-2" />
+                    Generating Plan...
+                  </span>
+                ) : (
+                  "Generate Study Plan"
+                )}
               </button>
             </form>
             {/* Output Section */}
-            <div className="row" style={{ marginTop: "30px" }}>
-              {GenerateStudyPlan && (
-                <div className="col-md-8 col-md-offset-2">
-                  <div
-                    className="output-box"
-                    style={{
-                      padding: "20px",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      backgroundColor: "#f9f9f9",
-                    }}
-                  >
-                    <h3>Result of generated Study Plan</h3>
-                    <p>{GenerateStudyPlan}</p>
-                  </div>
+            {generatedPlan && (
+              <div
+                className="mt-8 p-6 bg-white rounded-lg shadow-md col-md-8 col-md-offset-2"
+                style={{
+                  marginTop: "30px",
+                  padding: "20px",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                }}
+              >
+                <h3 className="text-xl font-semibold mb-4">Your Study Plan</h3>
+                <div className="prose max-w-none whitespace-pre-wrap">
+                  {generatedPlan}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
