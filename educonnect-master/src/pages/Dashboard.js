@@ -16,7 +16,6 @@ import {
   doc,
   collection,
   query,
-  where,
   getDoc,
   getDocs,
   deleteDoc,

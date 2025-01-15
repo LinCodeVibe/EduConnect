@@ -47,6 +47,17 @@ const StudyPlanPage = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
+  const renderPlan = () => {
+    const days = studyPlan?.generatedPlan?.split("\n").filter((line) => line.trim() !== "");
+    return days.map((day, index) => {
+      return (
+        <div key={index} className="day-plan">
+          <p>{day}</p>
+        </div>
+      );
+    });
+  };
+
   return (
     <Layout>
       <p
@@ -81,7 +92,7 @@ const StudyPlanPage = () => {
           </p>
           <div>
             <h3>Generated Plan</h3>
-            <p>{studyPlan?.generatedPlan}</p>
+            {renderPlan()}
           </div>
         </div>
       </div>
@@ -90,3 +101,4 @@ const StudyPlanPage = () => {
 };
 
 export default StudyPlanPage;
+

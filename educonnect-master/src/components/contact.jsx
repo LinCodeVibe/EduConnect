@@ -153,8 +153,7 @@ export const Contact = (props) => {
       <div id="footer">
         <div className="container text-center">
           <p>
-           
-          
+            &copy; {new Date().getFullYear()} EduConnect. All rights reserved.
           </p>
         </div>
       </div>
