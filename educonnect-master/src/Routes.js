@@ -5,6 +5,7 @@ import { UserProfile } from "./pages/UserProfile";
 import App from "./App";
 import SignupPage from "./pages/Signup";
 import SigninPage from "./pages/signin";
+import StudyPlanPage from "./pages/studyPlan/[id]";
 
 export const Routes = () => {
   return (
@@ -16,6 +17,7 @@ export const Routes = () => {
         <Route path="/profile" component={UserProfile} />
         <Route path="/signup" component={SignupPage} />
         <Route path="/signin" component={SigninPage} />
+        <Route path="/studyPlan/:id" component={StudyPlanPage} />
       </Switch>
     </Router>
   );
